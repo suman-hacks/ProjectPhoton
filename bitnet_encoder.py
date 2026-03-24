@@ -28,6 +28,15 @@ logging.getLogger("transformers").setLevel(logging.ERROR)
 # on some network configurations and macOS versions.
 os.environ.setdefault("HF_HUB_DISABLE_XET", "1")
 
+# If HuggingFace is blocked (corporate firewall), set HF_ENDPOINT to a mirror:
+#   HF_ENDPOINT=https://hf-mirror.com python3 -m streamlit run app.py
+# The code below auto-applies the mirror if the env var is already set,
+# or leaves the default huggingface.co endpoint untouched.
+_HF_MIRROR = os.environ.get("HF_ENDPOINT", "").strip()
+if _HF_MIRROR:
+    # Ensure huggingface_hub picks up the override before any import-time calls
+    os.environ["HF_ENDPOINT"] = _HF_MIRROR
+
 MODEL_REPO = "1bitLLM/bitnet_b1_58-3B"
 DEVICE     = "cpu"   # BitNet custom ops have no MPS kernel in current release
 
