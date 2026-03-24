@@ -115,7 +115,7 @@ st.markdown(
           flex: 1;
           min-width: 70px;
       }
-      .stat-pill .label { color: #606880; font-size: 0.65rem; letter-spacing: 0.8px; text-transform: uppercase; }
+      .stat-pill .label { color: #7A8099; font-size: 0.65rem; letter-spacing: 0.8px; text-transform: uppercase; }
       .stat-pill .value { color: #E8EAF0; font-size: 1.05rem; font-weight: 600; margin-top: 2px; }
       .stat-pill.quantum .label { color: #7B6FA8; }
       .stat-pill.quantum .value { color: #C9A84C; font-size: 1.15rem; }
@@ -179,7 +179,7 @@ st.markdown(
           padding: 16px 18px;
           text-align: center;
       }
-      .intent-card .dim    { font-size: 0.7rem; color: #606880; letter-spacing: 0.8px; text-transform: uppercase; margin-bottom: 6px; }
+      .intent-card .dim    { font-size: 0.7rem; color: #7A8099; letter-spacing: 0.8px; text-transform: uppercase; margin-bottom: 6px; }
       .intent-card .level  { font-size: 0.75rem; font-weight: 600; margin-bottom: 8px; }
       .intent-card .ternary{ font-size: 1.6rem; font-weight: 800; line-height: 1; }
 
@@ -206,7 +206,18 @@ st.markdown(
       .pipeline-step:last-child { border-bottom: none; }
       .pipeline-step .icon { font-size: 1.4rem; margin-top: 2px; flex-shrink: 0; }
       .pipeline-step .title { font-size: 0.85rem; font-weight: 600; color: #C9D0E8; margin-bottom: 2px; }
-      .pipeline-step .desc  { font-size: 0.77rem; color: #606880; line-height: 1.5; }
+      .pipeline-step .desc  { font-size: 0.77rem; color: #7A8099; line-height: 1.5; }
+
+      /* ── Streamlit chrome — blend into dark theme ── */
+      header[data-testid="stHeader"] {
+          background-color: #0D0F14 !important;
+          border-bottom: 1px solid #1F2333;
+      }
+      [data-testid="stToolbar"] { background-color: #0D0F14 !important; }
+      /* Hide the Deploy / star / fork action buttons */
+      [data-testid="stToolbarActions"] { display: none !important; }
+      #MainMenu { visibility: hidden !important; }
+      footer     { visibility: hidden !important; }
     </style>
     """,
     unsafe_allow_html=True,
@@ -264,7 +275,7 @@ def _build_business_explanation(
 with st.sidebar:
     st.markdown("## ⚛ Project Photon")
     st.markdown(
-        "<p style='color:#606880;font-size:0.78rem;margin-top:-8px;'>Hybrid QNN Payment Routing</p>",
+        "<p style='color:#7A8099;font-size:0.78rem;margin-top:-8px;'>Hybrid QNN Payment Routing</p>",
         unsafe_allow_html=True,
     )
     st.markdown("<hr style='border-color:#1F2333;margin:16px 0;'>", unsafe_allow_html=True)
@@ -283,7 +294,7 @@ with st.sidebar:
 
     st.markdown(
         f"""
-        <div style='font-size:0.78rem;color:#606880;line-height:2;'>
+        <div style='font-size:0.78rem;color:#7A8099;line-height:2;'>
           <div><span style='color:#A0AACC;'>Amount</span>&nbsp;&nbsp;
                <strong style='color:#E8EAF0;'>${scenario['amount_usd']:,.0f}</strong></div>
           <div><span style='color:#A0AACC;'>FX Pair</span>&nbsp;&nbsp;
@@ -387,7 +398,7 @@ if optimize_clicked:
 # ---------------------------------------------------------------------------
 st.markdown("# Project Photon")
 st.markdown(
-    "<p style='color:#606880;font-size:0.9rem;margin-top:-14px;margin-bottom:24px;'>"
+    "<p style='color:#7A8099;font-size:0.9rem;margin-top:-14px;margin-bottom:24px;'>"
     "Decision Intelligence Cockpit &nbsp;·&nbsp; Hybrid QNN Payment Routing Engine</p>",
     unsafe_allow_html=True,
 )
@@ -410,16 +421,16 @@ st.markdown(
 priority = scenario["priority_hint"]
 priority_colors = {
     "CRITICAL": "#E55A5A", "HIGH": "#C9A84C",
-    "BALANCED": "#6FCF97", "MEDIUM": "#4A90D9", "LOW": "#606880",
+    "BALANCED": "#6FCF97", "MEDIUM": "#4A90D9", "LOW": "#7A8099",
 }
 chips_html = "<div style='display:flex;gap:10px;flex-wrap:wrap;margin-bottom:28px;'>"
 for dim, level in priority.items():
-    color = priority_colors.get(level, "#606880")
+    color = priority_colors.get(level, "#7A8099")
     chips_html += (
         f"<div style='background:#13161E;border:1px solid {color}33;border-radius:6px;"
         f"padding:6px 14px;font-size:0.75rem;'>"
         f"<span style='color:{color};font-weight:700;letter-spacing:0.8px;'>{level}</span>"
-        f"<span style='color:#606880;margin-left:6px;'>{dim.capitalize()}</span>"
+        f"<span style='color:#7A8099;margin-left:6px;'>{dim.capitalize()}</span>"
         f"</div>"
     )
 chips_html += "</div>"
@@ -434,7 +445,7 @@ st.markdown("## STAGE 2 — Route Intelligence")
 
 if scores_available:
     st.markdown(
-        "<p style='color:#606880;font-size:0.82rem;margin-top:-10px;margin-bottom:20px;'>"
+        "<p style='color:#7A8099;font-size:0.82rem;margin-top:-10px;margin-bottom:20px;'>"
         "Routes ranked by Photon Match Score from the IBM EstimatorQNN. "
         "Winner highlighted in gold.</p>",
         unsafe_allow_html=True,
@@ -443,7 +454,7 @@ if scores_available:
     winner_id      = display_routes[0]["id"]
 else:
     st.markdown(
-        "<p style='color:#606880;font-size:0.82rem;margin-top:-10px;margin-bottom:20px;'>"
+        "<p style='color:#7A8099;font-size:0.82rem;margin-top:-10px;margin-bottom:20px;'>"
         "Four candidate routes evaluated against network benchmarks. "
         "Run optimization to apply Quantum scoring.</p>",
         unsafe_allow_html=True,
@@ -485,7 +496,7 @@ for i, route in enumerate(display_routes):
                 {route['badge']}
               </span>
               <div style='font-size:1.0rem;font-weight:700;color:#E8EAF0;margin-bottom:4px;'>{route['name']}</div>
-              <div style='font-size:0.78rem;color:#606880;line-height:1.5;'>{route['description']}</div>
+              <div style='font-size:0.78rem;color:#7A8099;line-height:1.5;'>{route['description']}</div>
               <div class='stat-row'>
                 <div class='stat-pill'>
                   <div class='label'>Approval</div>
@@ -537,7 +548,7 @@ st.markdown("<hr class='photon-divider'>", unsafe_allow_html=True)
 if scores_available and st.session_state.classical_routes is not None:
     st.markdown("## Quantum Impact Analysis")
     st.markdown(
-        "<p style='color:#606880;font-size:0.82rem;margin-top:-10px;margin-bottom:20px;'>"
+        "<p style='color:#7A8099;font-size:0.82rem;margin-top:-10px;margin-bottom:20px;'>"
         "Classical priority-weighted routing vs. IBM EstimatorQNN hybrid scoring — "
         "illustrating the incremental value of the quantum layer.</p>",
         unsafe_allow_html=True,
@@ -570,7 +581,7 @@ if scores_available and st.session_state.classical_routes is not None:
         return (
             f"<div style='{top_style}border-radius:8px;padding:10px 14px;"
             f"margin-bottom:8px;display:flex;align-items:center;gap:12px;'>"
-            f"<span style='font-size:1.1rem;font-weight:700;color:#606880;min-width:22px;'>#{rank}</span>"
+            f"<span style='font-size:1.1rem;font-weight:700;color:#7A8099;min-width:22px;'>#{rank}</span>"
             f"<span style='flex:1;'>"
             f"  <span style='font-size:0.78rem;font-weight:600;color:#E8EAF0;'>{route['name']}</span><br>"
             f"  <span style='font-size:0.7rem;color:{badge_color};'>{route['badge']}</span>"
@@ -596,7 +607,7 @@ if scores_available and st.session_state.classical_routes is not None:
                                    classical_rank, quantum_rank)
         st.markdown(rows_html + "</div>", unsafe_allow_html=True)
         st.markdown(
-            "<p style='color:#404458;font-size:0.7rem;margin-top:6px;'>"
+            "<p style='color:#5A607A;font-size:0.7rem;margin-top:6px;'>"
             "Linear dot-product of priority weights × route performance. "
             "No cross-dimensional correlation modelling.</p>",
             unsafe_allow_html=True,
@@ -616,7 +627,7 @@ if scores_available and st.session_state.classical_routes is not None:
                                    classical_rank, quantum_rank)
         st.markdown(rows_html + "</div>", unsafe_allow_html=True)
         st.markdown(
-            "<p style='color:#404458;font-size:0.7rem;margin-top:6px;'>"
+            "<p style='color:#5A607A;font-size:0.7rem;margin-top:6px;'>"
             "30% IBM EstimatorQNN expectation values + 70% classical alignment. "
             "Quantum entanglement captures non-linear priority interactions.</p>",
             unsafe_allow_html=True,
@@ -700,9 +711,9 @@ else:
 
     intent_cols = st.columns(4)
     for col, dim, level, tval in zip(intent_cols, DIMENSION_LABELS, priority_levels, ternary_vals):
-        color = ternary_color.get(tval, "#606880")
+        color = ternary_color.get(tval, "#7A8099")
         label = ternary_label.get(tval, "0")
-        plevel_color = priority_colors.get(level, "#606880")
+        plevel_color = priority_colors.get(level, "#7A8099")
         with col:
             st.markdown(
                 f"""
@@ -710,14 +721,14 @@ else:
                   <div class='dim'>{dim}</div>
                   <div class='level' style='color:{plevel_color};'>{level}</div>
                   <div class='ternary' style='color:{color};'>{label}</div>
-                  <div style='font-size:0.65rem;color:#404458;margin-top:4px;'>ternary bit</div>
+                  <div style='font-size:0.65rem;color:#5A607A;margin-top:4px;'>ternary bit</div>
                 </div>
                 """,
                 unsafe_allow_html=True,
             )
 
     st.markdown(
-        "<p style='color:#404458;font-size:0.73rem;margin-top:10px;margin-bottom:24px;'>"
+        "<p style='color:#5A607A;font-size:0.73rem;margin-top:10px;margin-bottom:24px;'>"
         "The 1.58-bit encoder compresses the scenario's semantic priorities into a ternary "
         "tensor {−1, 0, +1}, eliminating all floating-point multiplications before quantum injection.</p>",
         unsafe_allow_html=True,
@@ -784,7 +795,7 @@ else:
     business_explanation = _build_business_explanation(winner, scenario, top_dim, top_level)
 
     margin_note = (
-        f"<span style='color:#606880;font-size:0.78rem;'>"
+        f"<span style='color:#7A8099;font-size:0.78rem;'>"
         f"Nearest alternative: <strong style='color:#A0AACC;'>{runner_up['name']}</strong> "
         f"({runner_up['photon_score']}/100) &nbsp;·&nbsp; winning margin: "
         f"<strong style='color:#C9A84C;'>+{margin} pts</strong></span>"
@@ -807,7 +818,7 @@ else:
 
     # ── 3d. Full score table ───────────────────────────────────────────────
     st.markdown(
-        "<p style='color:#404458;font-size:0.78rem;font-weight:600;letter-spacing:0.5px;margin-bottom:10px;'>"
+        "<p style='color:#5A607A;font-size:0.78rem;font-weight:600;letter-spacing:0.5px;margin-bottom:10px;'>"
         "FULL QUANTUM SCORE RANKING</p>",
         unsafe_allow_html=True,
     )
@@ -826,7 +837,7 @@ else:
                   <div style='font-size:0.75rem;font-weight:600;color:#C9D0E8;
                               margin-bottom:8px;line-height:1.3;'>{route['name']}</div>
                   <div style='font-size:1.4rem;font-weight:800;color:#C9A84C;'>{pct}</div>
-                  <div style='font-size:0.6rem;color:#404458;margin-bottom:8px;'>PHOTON SCORE</div>
+                  <div style='font-size:0.6rem;color:#5A607A;margin-bottom:8px;'>PHOTON SCORE</div>
                   <div style='background:#0D0F14;border-radius:4px;height:4px;overflow:hidden;'>
                     <div style='background:linear-gradient(90deg,#2A3A7C,#C9A84C);
                                 width:{bar_w}%;height:100%;border-radius:4px;'></div>
@@ -853,7 +864,7 @@ st.markdown("## Quantum Circuit Diagram")
 
 if not scores_available:
     st.markdown(
-        "<p style='color:#606880;font-size:0.82rem;margin-top:-12px;margin-bottom:16px;'>"
+        "<p style='color:#7A8099;font-size:0.82rem;margin-top:-12px;margin-bottom:16px;'>"
         "The circuit diagram will render here after optimization runs, showing the "
         "scenario-specific rotation angles bound to each RY gate.</p>",
         unsafe_allow_html=True,
@@ -872,7 +883,7 @@ if not scores_available:
     )
 else:
     st.markdown(
-        "<p style='color:#606880;font-size:0.82rem;margin-top:-12px;margin-bottom:24px;'>"
+        "<p style='color:#7A8099;font-size:0.82rem;margin-top:-12px;margin-bottom:24px;'>"
         "4-qubit IBM QuantumCircuit with scenario-specific RY rotation angles bound from "
         "the BitNet intent tensor. Each scenario produces a distinct circuit state.</p>",
         unsafe_allow_html=True,
@@ -925,7 +936,7 @@ with arch_specs:
             <div style='background:#13161E;border:1px solid #1F2333;border-radius:7px;
                         padding:9px 14px;margin-bottom:7px;display:flex;
                         justify-content:space-between;align-items:center;'>
-              <span style='font-size:0.7rem;color:#606880;letter-spacing:0.4px;'>{_label}</span>
+              <span style='font-size:0.7rem;color:#7A8099;letter-spacing:0.4px;'>{_label}</span>
               <span style='font-size:0.76rem;font-weight:600;color:#C9D0E8;'>{_value}</span>
             </div>
             """,
