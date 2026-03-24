@@ -273,14 +273,20 @@ def _build_business_explanation(
 # Sidebar — Scenario Selection
 # ---------------------------------------------------------------------------
 with st.sidebar:
-    st.markdown("## ⚛ Project Photon")
+    st.markdown(
+        "<h2 style='color:#C9D0E8;font-size:1.1rem;font-weight:700;margin-bottom:2px;'>⚛ Project Photon</h2>",
+        unsafe_allow_html=True,
+    )
     st.markdown(
         "<p style='color:#7A8099;font-size:0.78rem;margin-top:-8px;'>Hybrid QNN Payment Routing</p>",
         unsafe_allow_html=True,
     )
     st.markdown("<hr style='border-color:#1F2333;margin:16px 0;'>", unsafe_allow_html=True)
 
-    st.markdown("### Payment Scenario")
+    st.markdown(
+        "<h3 style='color:#A0AACC;font-size:0.95rem;font-weight:600;margin-bottom:8px;'>Payment Scenario</h3>",
+        unsafe_allow_html=True,
+    )
     scenario_options = {v["label"]: k for k, v in SCENARIOS.items()}
     selected_label = st.selectbox(
         label="Select scenario",
