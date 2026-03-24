@@ -117,30 +117,16 @@ def load_bitnet_model() -> tuple:
     the simulated priority-vector approach so it never crashes.
     """
     try:
-        import json
-        from pathlib import Path
-        from transformers import AutoModelForCausalLM, AutoTokenizer
+        from transformers import AutoModelForCausalLM, LlamaTokenizer
 
-        # --- Patch cached tokenizer_config.json ---
-        # The model's repo sets "tokenizer_class": "BitnetTokenizer", which current
-        # transformers can't resolve even with trust_remote_code=True.
-        # BitNet b1.58-3B uses an identical LLaMA vocabulary, so we swap the class
-        # name to "LlamaTokenizer" in every cached copy of the config before loading.
-        _hf_cache = Path.home() / ".cache" / "huggingface" / "hub"
-        for _cfg_path in _hf_cache.glob("**/tokenizer_config.json"):
-            if "bitnet" in str(_cfg_path).lower() or "1bitllm" in str(_cfg_path).lower():
-                try:
-                    _cfg = json.loads(_cfg_path.read_text())
-                    if _cfg.get("tokenizer_class") == "BitnetTokenizer":
-                        _cfg["tokenizer_class"] = "LlamaTokenizer"
-                        _cfg_path.write_text(json.dumps(_cfg, indent=2))
-                except Exception:
-                    pass
-
-        tokenizer = AutoTokenizer.from_pretrained(
+        # BitNet b1.58-3B is LLaMA-based and uses an identical LLaMA vocabulary.
+        # AutoTokenizer fails because tokenizer_config.json names "BitnetTokenizer"
+        # which isn't registered in current transformers releases. Loading via the
+        # concrete LlamaTokenizer class bypasses that class-lookup entirely and
+        # downloads the tokenizer.model (SentencePiece) file directly.
+        tokenizer = LlamaTokenizer.from_pretrained(
             MODEL_REPO,
             trust_remote_code=True,
-            use_fast=False,
         )
         if tokenizer.pad_token is None:
             tokenizer.pad_token = tokenizer.eos_token
