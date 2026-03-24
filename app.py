@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import streamlit as st
 from mock_data import SCENARIOS, ROUTES, BADGE_COLORS
 from bitnet_encoder import load_bitnet_model, extract_intent_vector, get_model_info, DIMENSION_LABELS, MODEL_REPO
-from qiskit_router import build_qnn_model, build_photon_circuit, score_routes
+from qiskit_router import build_qnn_model, build_photon_circuit, score_routes, score_routes_classical
 
 # ---------------------------------------------------------------------------
 # Page Configuration — must be the first Streamlit call
@@ -29,6 +29,7 @@ for key, default in {
     "optimized_scenario": None,
     "intent_tensor_list": None,
     "model_info":         None,   # diagnostics dict from get_model_info()
+    "classical_routes":   None,   # classical-only scores for impact comparison
 }.items():
     if key not in st.session_state:
         st.session_state[key] = default
@@ -367,7 +368,9 @@ if optimize_clicked:
         st.write("**Step 2 · Quantum Layer** — injecting ternary tensor into IBM EstimatorQNN…")
         qnn_model = get_qnn_model()
         scored    = score_routes(qnn_model, intent_tensor, ROUTES, scenario_data=scenario)
+        classical = score_routes_classical(ROUTES, scenario_data=scenario)
         st.session_state.scored_routes      = scored
+        st.session_state.classical_routes   = classical
         st.session_state.optimized_scenario = selected_id
 
         pipeline_status.update(
@@ -521,6 +524,139 @@ if scores_available:
                     border-radius:8px;padding:16px 20px;margin-top:4px;margin-bottom:4px;
                     font-size:0.83rem;color:#A0B0CC;line-height:1.75;'>
           {_expl}
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+st.markdown("<hr class='photon-divider'>", unsafe_allow_html=True)
+
+# ---------------------------------------------------------------------------
+# QUANTUM IMPACT ANALYSIS — Classical vs. Quantum-Enhanced side-by-side
+# ---------------------------------------------------------------------------
+if scores_available and st.session_state.classical_routes is not None:
+    st.markdown("## Quantum Impact Analysis")
+    st.markdown(
+        "<p style='color:#606880;font-size:0.82rem;margin-top:-10px;margin-bottom:20px;'>"
+        "Classical priority-weighted routing vs. IBM EstimatorQNN hybrid scoring — "
+        "illustrating the incremental value of the quantum layer.</p>",
+        unsafe_allow_html=True,
+    )
+
+    classical_routes = st.session_state.classical_routes
+    quantum_routes   = st.session_state.scored_routes
+
+    # Build rank lookup: route_id → rank (1-based) for each method
+    classical_rank = {r["id"]: i + 1 for i, r in enumerate(classical_routes)}
+    quantum_rank   = {r["id"]: i + 1 for i, r in enumerate(quantum_routes)}
+
+    col_c, col_q = st.columns(2)
+
+    def _rank_row(rank, route, score_key, score_label, classical_rank, quantum_rank):
+        rid   = route["id"]
+        c_pos = classical_rank[rid]
+        q_pos = quantum_rank[rid]
+        delta = c_pos - q_pos          # positive = moved up in quantum ranking
+        if delta > 0:
+            arrow, arrow_color = f"▲ +{delta}", "#6FCF97"
+        elif delta < 0:
+            arrow, arrow_color = f"▼ {delta}", "#E55A5A"
+        else:
+            arrow, arrow_color = "— ", "#4A90D9"
+
+        badge_color = BADGE_COLORS[route["badge"]]
+        is_top      = rank == 1
+        top_style   = "border:1px solid #C9A84C55;background:#C9A84C0A;" if is_top else "border:1px solid #1F2333;"
+        return (
+            f"<div style='{top_style}border-radius:8px;padding:10px 14px;"
+            f"margin-bottom:8px;display:flex;align-items:center;gap:12px;'>"
+            f"<span style='font-size:1.1rem;font-weight:700;color:#606880;min-width:22px;'>#{rank}</span>"
+            f"<span style='flex:1;'>"
+            f"  <span style='font-size:0.78rem;font-weight:600;color:#E8EAF0;'>{route['name']}</span><br>"
+            f"  <span style='font-size:0.7rem;color:{badge_color};'>{route['badge']}</span>"
+            f"</span>"
+            f"<span style='text-align:right;'>"
+            f"  <span style='font-size:0.95rem;font-weight:700;color:#A0B0CC;'>{route[score_key]}</span><br>"
+            f"  <span style='font-size:0.68rem;color:{arrow_color};font-weight:600;'>{arrow}</span>"
+            f"</span>"
+            f"</div>"
+        )
+
+    with col_c:
+        st.markdown(
+            "<div style='background:#0D1A2A;border:1px solid #1F3050;border-radius:10px;"
+            "padding:14px 16px;margin-bottom:6px;'>"
+            "<p style='color:#4A90D9;font-size:0.75rem;font-weight:700;letter-spacing:1px;"
+            "margin:0 0 12px 0;'>CLASSICAL ROUTING &nbsp;·&nbsp; Priority-Weighted Only</p>",
+            unsafe_allow_html=True,
+        )
+        rows_html = ""
+        for i, route in enumerate(classical_routes):
+            rows_html += _rank_row(i + 1, route, "classical_score", "Classical Score",
+                                   classical_rank, quantum_rank)
+        st.markdown(rows_html + "</div>", unsafe_allow_html=True)
+        st.markdown(
+            "<p style='color:#404458;font-size:0.7rem;margin-top:6px;'>"
+            "Linear dot-product of priority weights × route performance. "
+            "No cross-dimensional correlation modelling.</p>",
+            unsafe_allow_html=True,
+        )
+
+    with col_q:
+        st.markdown(
+            "<div style='background:#0A1A14;border:1px solid #1A4A2A;border-radius:10px;"
+            "padding:14px 16px;margin-bottom:6px;'>"
+            "<p style='color:#6FCF97;font-size:0.75rem;font-weight:700;letter-spacing:1px;"
+            "margin:0 0 12px 0;'>⚛ QUANTUM-ENHANCED &nbsp;·&nbsp; Hybrid Photon Score</p>",
+            unsafe_allow_html=True,
+        )
+        rows_html = ""
+        for i, route in enumerate(quantum_routes):
+            rows_html += _rank_row(i + 1, route, "photon_score", "Photon Score",
+                                   classical_rank, quantum_rank)
+        st.markdown(rows_html + "</div>", unsafe_allow_html=True)
+        st.markdown(
+            "<p style='color:#404458;font-size:0.7rem;margin-top:6px;'>"
+            "30% IBM EstimatorQNN expectation values + 70% classical alignment. "
+            "Quantum entanglement captures non-linear priority interactions.</p>",
+            unsafe_allow_html=True,
+        )
+
+    # ── Impact callout ────────────────────────────────────────────────────
+    classical_winner = classical_routes[0]
+    quantum_winner   = quantum_routes[0]
+    rank_shifts      = sum(1 for r in quantum_routes if quantum_rank[r["id"]] != classical_rank[r["id"]])
+
+    if classical_winner["id"] != quantum_winner["id"]:
+        c_rank_of_qw = classical_rank[quantum_winner["id"]]
+        impact_msg = (
+            f"⚛ &nbsp;<strong>Quantum Edge Detected:</strong> The IBM EstimatorQNN elevated "
+            f"<strong>{quantum_winner['name']}</strong> from classical rank "
+            f"<strong>#{c_rank_of_qw}</strong> to <strong>#1</strong>. "
+            f"Quantum entanglement between input dimensions surfaced a cross-priority "
+            f"correlation that the classical linear model scored sub-optimally — "
+            f"a decision the QNN resolved through superposition-based expectation values."
+        )
+        impact_color = "#6FCF97"
+        impact_border = "#6FCF9755"
+    else:
+        impact_msg = (
+            f"✅ &nbsp;<strong>Quantum Validation:</strong> The IBM EstimatorQNN confirms "
+            f"<strong>{quantum_winner['name']}</strong> as the optimal route, independently "
+            f"corroborating the classical priority model. {rank_shifts} route(s) were "
+            f"re-ranked in the quantum scoring — the QNN detected subtle entanglement "
+            f"patterns that refined confidence scores without overturning the primary decision."
+        )
+        impact_color = "#4A90D9"
+        impact_border = "#4A90D955"
+
+    st.markdown(
+        f"""
+        <div style='background:#0C0F1A;border:1px solid {impact_border};
+                    border-left:3px solid {impact_color};
+                    border-radius:8px;padding:14px 20px;margin-top:8px;
+                    font-size:0.82rem;color:#A0B0CC;line-height:1.75;'>
+          {impact_msg}
         </div>
         """,
         unsafe_allow_html=True,

@@ -160,3 +160,51 @@ def score_routes(
 
     scored.sort(key=lambda r: r["photon_score"], reverse=True)
     return scored
+
+
+def score_routes_classical(route_data: list, scenario_data: dict = None) -> list:
+    """
+    Pure classical priority-weighted scoring — no QNN component.
+    Used for the side-by-side Quantum Impact Analysis comparison.
+
+    Applies the same emphasis weights as score_routes() but assigns 100%
+    weight to the classical alignment score (QNN contribution = 0%).
+    Returns route_data sorted descending by classical_score.
+    """
+    _SCALE = {
+        "CRITICAL": 1.00, "HIGH": 0.75, "BALANCED": 0.50,
+        "MEDIUM":   0.30, "LOW":  0.05,
+    }
+
+    if scenario_data is not None:
+        prio  = scenario_data["priority_hint"]
+        raw_p = [_SCALE.get(prio.get(k, "MEDIUM"), 0.30)
+                 for k in ["approval", "cost", "latency", "resilience"]]
+        mean_p   = sum(raw_p) / len(raw_p)
+        centered = [v - mean_p for v in raw_p]
+        thresh   = sum(abs(v) for v in centered) / len(centered)
+        ternary  = [1.0 if v > thresh else (-1.0 if v < -thresh else 0.0) for v in centered]
+        weights  = [2.0 if t > 0 else (0.3 if t == 0.0 else 0.0) for t in ternary]
+    else:
+        weights = [1.0, 1.0, 1.0, 1.0]
+
+    total_w = sum(weights) or 1.0
+
+    def _perf(stats: dict) -> list:
+        return [
+            stats["approval_rate"]  / 100.0,
+            1.0 - stats["cost_bps"] / 15.0,
+            1.0 - stats["latency_ms"] / 600.0,
+            stats["resilience_score"] / 100.0,
+        ]
+
+    scored = []
+    for route in route_data:
+        perf = _perf(route["stats"])
+        classical_norm = sum(w * p for w, p in zip(weights, perf)) / total_w
+        r = dict(route)
+        r["classical_score"] = round(classical_norm * 100.0, 1)
+        scored.append(r)
+
+    scored.sort(key=lambda r: r["classical_score"], reverse=True)
+    return scored
