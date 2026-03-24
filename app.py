@@ -375,6 +375,9 @@ if optimize_clicked:
         )
 
     scores_available = True
+    # Rerun so the sidebar badge (which rendered before this block ran) now
+    # picks up the updated st.session_state.model_info value.
+    st.rerun()
 
 # ---------------------------------------------------------------------------
 # Main Panel Header
