@@ -150,6 +150,16 @@ def score_routes(
             stats["resilience_score"] / 100.0,        # resilience↑ better
         ]
 
+    # ── QNN relative adjustment ───────────────────────────────────────────
+    # Normalise QNN outputs relative to their own mean so adjustments are
+    # always centred around zero: routes above the QNN average get a positive
+    # bonus, routes below get a penalty. This guarantees differentiation
+    # regardless of the absolute expectation value magnitude.
+    qnn_mean   = sum(qnn_vals) / len(qnn_vals)
+    qnn_spread = max(abs(v - qnn_mean) for v in qnn_vals) or 1.0
+    # Scale so the largest deviation maps to ±15 points
+    qnn_scale  = 15.0 / qnn_spread
+
     scored = []
     for route, qnn_val in zip(route_data, qnn_vals):
         perf = _perf(route["stats"])
@@ -157,16 +167,12 @@ def score_routes(
         # Priority-weighted alignment: dot(weights, perf) / total_weight
         classical_score = sum(w * p for w, p in zip(weights, perf)) / total_w * 100.0
 
-        # QNN expectation value ∈ [-1, +1] → centred adjustment ∈ [-15, +15]
-        # The QNN acts as a quantum-informed bonus/penalty on top of the classical
-        # baseline rather than replacing part of it — keeps scores in the same range
-        # and makes the quantum contribution immediately legible.
-        qnn_norm       = (qnn_val + 1.0) / 2.0          # normalise to [0, 1]
-        qnn_adjustment = (qnn_norm - 0.5) * 40.0        # ±20 point adjustment
+        # QNN adjustment relative to peer average — always centred at zero
+        qnn_adjustment = (qnn_val - qnn_mean) * qnn_scale
 
         r = dict(route)
-        r["photon_score"]    = round(classical_score + qnn_adjustment, 1)
-        r["qnn_adjustment"]  = round(qnn_adjustment, 1)   # stored for UI display
+        r["photon_score"]   = round(classical_score + qnn_adjustment, 1)
+        r["qnn_adjustment"] = round(qnn_adjustment, 1)
         scored.append(r)
 
     scored.sort(key=lambda r: r["photon_score"], reverse=True)
