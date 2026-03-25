@@ -157,8 +157,8 @@ def score_routes(
     # regardless of the absolute expectation value magnitude.
     qnn_mean   = sum(qnn_vals) / len(qnn_vals)
     qnn_spread = max(abs(v - qnn_mean) for v in qnn_vals) or 1.0
-    # Scale so the largest deviation maps to ±15 points
-    qnn_scale  = 15.0 / qnn_spread
+    # Scale so the largest deviation maps to ±12 points
+    qnn_scale  = 12.0 / qnn_spread
 
     scored = []
     for route, qnn_val in zip(route_data, qnn_vals):
@@ -171,7 +171,7 @@ def score_routes(
         qnn_adjustment = (qnn_val - qnn_mean) * qnn_scale
 
         r = dict(route)
-        r["photon_score"]   = round(classical_score + qnn_adjustment, 1)
+        r["photon_score"]   = round(min(classical_score + qnn_adjustment, 99.9), 1)
         r["qnn_adjustment"] = round(qnn_adjustment, 1)
         scored.append(r)
 
