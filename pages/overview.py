@@ -1,16 +1,9 @@
 """
-pages/1_Overview.py — Project Photon
+pages/overview.py — Project Photon
 Business problem, solution architecture, and value proposition page.
 """
 
 import streamlit as st
-
-st.set_page_config(
-    page_title="Project Photon — Overview",
-    page_icon="⚛",
-    layout="wide",
-    initial_sidebar_state="expanded",
-)
 
 # ---------------------------------------------------------------------------
 # Shared CSS — identical dark theme as main dashboard
@@ -228,11 +221,11 @@ st.markdown(
     """
     <div class='section-card'>
       <div class='section-title'>The Business Problem</div>
-      <div class='section-heading'>Payment Routing is an Unsolved Combinatorial Optimisation Problem</div>
+      <div class='section-heading'>Payment Routing is an Unsolved Combinatorial Optimization Problem</div>
       <div class='section-body'>
         Tier-1 financial institutions route <strong style='color:#E8EAF0;'>billions of transactions annually</strong>
         across a fragmented network of processors, card schemes, and bilateral corridors.
-        Every routing decision must simultaneously optimise four competing dimensions —
+        Every routing decision must simultaneously optimize four competing dimensions —
         <strong style='color:#C9A84C;'>approval rate, transaction cost, settlement latency, and network resilience</strong> —
         under hard real-time constraints.<br><br>
         Classical rule-based routers evaluate these dimensions <em>linearly and independently</em>,
@@ -273,7 +266,7 @@ with col3:
         <div style='background:#0A1A0A;border:1px solid #6FCF9733;border-radius:10px;padding:18px 20px;'>
           <div style='font-size:0.65rem;color:#6FCF97;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;'>Pain Point 3</div>
           <div style='font-size:0.85rem;font-weight:700;color:#E8EAF0;margin-bottom:8px;'>Static Rules Can't Adapt to Context</div>
-          <div style='font-size:0.78rem;color:#7A8099;line-height:1.6;'>Hard-coded routing rules cannot infer semantic intent from transaction context — a $2.4M cross-border settlement and a $12K RTP payment require fundamentally different optimisation priorities.</div>
+          <div style='font-size:0.78rem;color:#7A8099;line-height:1.6;'>Hard-coded routing rules cannot infer semantic intent from transaction context — a $2.4M cross-border settlement and a $12K RTP payment require fundamentally different optimization priorities.</div>
         </div>
         """, unsafe_allow_html=True)
 
@@ -289,7 +282,7 @@ st.markdown(
       <div class='section-heading'>A Continuous Hybrid Pipeline: 1.58-bit AI → IBM Quantum Neural Network</div>
       <div class='section-body'>
         Project Photon is the first payment routing engine to fuse <strong style='color:#E8EAF0;'>ultra-compressed
-        classical AI</strong> with <strong style='color:#E8EAF0;'>quantum combinatorial optimisation</strong>
+        classical AI</strong> with <strong style='color:#E8EAF0;'>quantum combinatorial optimization</strong>
         in a single continuous inference pipeline. A native 1.58-bit BitNet language model
         extracts semantic payment intent from natural language transaction context and
         compresses it into a 4-dimensional ternary tensor — which is then injected directly
@@ -322,7 +315,7 @@ st.markdown(
         <div class='node-icon'>⚙️</div>
         <div class='node-label'>Compression</div>
         <div class='node-name'>nn.Linear Reducer</div>
-        <div class='node-sub'>3200-dim → 4-dim<br>sigmoid normalised [0,1]</div>
+        <div class='node-sub'>3200-dim → 4-dim<br>sigmoid normalized [0,1]</div>
       </div>
       <div class='pipeline-arrow'>→</div>
       <div class='pipeline-node' style='border-color:#BB6BD955;'>
@@ -369,7 +362,7 @@ st.markdown(
         </div>
       </div>
       <div class='value-box green'>
-        <div class='v-title'>Cost Reduction — Processing Fee Optimisation</div>
+        <div class='v-title'>Cost Reduction — Processing Fee Optimization</div>
         <div class='v-body'>
           Multi-dimensional route scoring simultaneously minimises basis-point costs
           without sacrificing approval or resilience.
@@ -425,7 +418,7 @@ st.markdown(
       <div class='tech-box'>
         <div class='t-name'>PyTorch</div>
         <div class='t-role'>Tensor Operations</div>
-        <div class='t-desc'>nn.Linear reducer compresses BitNet's 3200-dimensional hidden state to 4 dimensions via Xavier-uniform initialised projection. Sigmoid normalisation maps output to [0,1] for quantum angle encoding. Runs on Apple Silicon MPS or CPU.</div>
+        <div class='t-desc'>nn.Linear reducer compresses BitNet's 3200-dimensional hidden state to 4 dimensions via Xavier-uniform initialized projection. Sigmoid normalization maps output to [0,1] for quantum angle encoding. Runs on Apple Silicon MPS or CPU.</div>
       </div>
       <div class='tech-box'>
         <div class='t-name'>Streamlit</div>
