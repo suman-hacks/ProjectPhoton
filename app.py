@@ -569,7 +569,7 @@ if scores_available and st.session_state.classical_routes is not None:
 
     col_c, col_q = st.columns(2)
 
-    def _rank_row(rank, route, score_key, score_label, classical_rank, quantum_rank):
+    def _rank_row(rank, route, score_key, classical_rank, quantum_rank, show_adj=False):
         rid   = route["id"]
         c_pos = classical_rank[rid]
         q_pos = quantum_rank[rid]
@@ -579,17 +579,31 @@ if scores_available and st.session_state.classical_routes is not None:
         elif delta < 0:
             arrow, arrow_color = f"▼ {delta}", "#E55A5A"
         else:
-            arrow, arrow_color = "— ", "#4A90D9"
+            arrow, arrow_color = "—", "#4A90D9"
 
         badge_color = BADGE_COLORS[route["badge"]]
         is_top      = rank == 1
         top_style   = "border:1px solid #C9A84C55;background:#C9A84C0A;" if is_top else "border:1px solid #1F2333;"
+
+        # QNN adjustment tag shown only in the quantum column
+        adj_html = ""
+        if show_adj and "qnn_adjustment" in route:
+            adj     = route["qnn_adjustment"]
+            a_color = "#6FCF97" if adj >= 0 else "#E55A5A"
+            a_sign  = "+" if adj >= 0 else ""
+            adj_html = (
+                f"<span style='font-size:0.62rem;color:{a_color};font-weight:600;"
+                f"background:{a_color}18;border-radius:3px;padding:1px 5px;margin-left:6px;'>"
+                f"QNN {a_sign}{adj}</span>"
+            )
+
         return (
             f"<div style='{top_style}border-radius:8px;padding:10px 14px;"
             f"margin-bottom:8px;display:flex;align-items:center;gap:12px;'>"
             f"<span style='font-size:1.1rem;font-weight:700;color:#7A8099;min-width:22px;'>#{rank}</span>"
             f"<span style='flex:1;'>"
-            f"  <span style='font-size:0.78rem;font-weight:600;color:#E8EAF0;'>{route['name']}</span><br>"
+            f"  <span style='font-size:0.78rem;font-weight:600;color:#E8EAF0;'>{route['name']}</span>"
+            f"  {adj_html}<br>"
             f"  <span style='font-size:0.7rem;color:{badge_color};'>{route['badge']}</span>"
             f"</span>"
             f"<span style='text-align:right;'>"
@@ -609,7 +623,7 @@ if scores_available and st.session_state.classical_routes is not None:
         )
         rows_html = ""
         for i, route in enumerate(classical_routes):
-            rows_html += _rank_row(i + 1, route, "classical_score", "Classical Score",
+            rows_html += _rank_row(i + 1, route, "classical_score",
                                    classical_rank, quantum_rank)
         st.markdown(rows_html + "</div>", unsafe_allow_html=True)
         st.markdown(
@@ -629,8 +643,8 @@ if scores_available and st.session_state.classical_routes is not None:
         )
         rows_html = ""
         for i, route in enumerate(quantum_routes):
-            rows_html += _rank_row(i + 1, route, "photon_score", "Photon Score",
-                                   classical_rank, quantum_rank)
+            rows_html += _rank_row(i + 1, route, "photon_score",
+                                   classical_rank, quantum_rank, show_adj=True)
         st.markdown(rows_html + "</div>", unsafe_allow_html=True)
         st.markdown(
             "<p style='color:#5A607A;font-size:0.7rem;margin-top:6px;'>"

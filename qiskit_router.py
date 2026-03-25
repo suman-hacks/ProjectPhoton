@@ -146,16 +146,18 @@ def score_routes(
         perf = _perf(route["stats"])
 
         # Priority-weighted alignment: dot(weights, perf) / total_weight
-        classical_norm = sum(w * p for w, p in zip(weights, perf)) / total_w
+        classical_score = sum(w * p for w, p in zip(weights, perf)) / total_w * 100.0
 
-        # QNN expectation value normalised to [0, 1]
-        qnn_norm = (qnn_val + 1.0) / 2.0
-
-        # Hybrid Photon Score
-        photon = 0.30 * qnn_norm + 0.70 * classical_norm
+        # QNN expectation value ∈ [-1, +1] → centred adjustment ∈ [-15, +15]
+        # The QNN acts as a quantum-informed bonus/penalty on top of the classical
+        # baseline rather than replacing part of it — keeps scores in the same range
+        # and makes the quantum contribution immediately legible.
+        qnn_norm       = (qnn_val + 1.0) / 2.0          # normalise to [0, 1]
+        qnn_adjustment = (qnn_norm - 0.5) * 30.0        # ±15 point adjustment
 
         r = dict(route)
-        r["photon_score"] = round(photon * 100.0, 1)
+        r["photon_score"]    = round(classical_score + qnn_adjustment, 1)
+        r["qnn_adjustment"]  = round(qnn_adjustment, 1)   # stored for UI display
         scored.append(r)
 
     scored.sort(key=lambda r: r["photon_score"], reverse=True)
