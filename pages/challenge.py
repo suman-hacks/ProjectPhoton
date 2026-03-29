@@ -167,35 +167,25 @@ st.markdown("""
       margin-bottom: 6px;
   }
 
-  /* ── Buttons — default (Select route) ── */
-  div[data-testid="stButton"] > button {
-      background: linear-gradient(135deg, #1A3A6C, #1E4D9A);
-      color: #FFFFFF;
-      border: 1px solid #2E5FBF;
-      border-radius: 8px;
-      padding: 10px 20px;
-      font-size: 0.88rem;
-      font-weight: 600;
-      letter-spacing: 0.4px;
-      width: 100%;
-      transition: all 0.2s;
+  /* ── All buttons — rich blue ── */
+  div[data-testid="stButton"] > button,
+  div[data-testid="stButton"] > button:focus,
+  div[data-testid="stButton"] > button:active {
+      background: linear-gradient(135deg, #1A3A6C, #1E4D9A) !important;
+      color: #FFFFFF !important;
+      border: 1px solid #2E5FBF !important;
+      border-radius: 8px !important;
+      padding: 10px 20px !important;
+      font-size: 0.88rem !important;
+      font-weight: 600 !important;
+      letter-spacing: 0.4px !important;
+      width: 100% !important;
+      transition: all 0.2s !important;
   }
   div[data-testid="stButton"] > button:hover {
-      background: linear-gradient(135deg, #1E4D9A, #2563C4);
-      border-color: #4A80E8;
-      box-shadow: 0 0 16px #2563C433;
-  }
-
-  /* ── Buttons — primary (Next / Final Results / Play Again) ── */
-  div[data-testid="stButton"] > button[kind="primary"],
-  div[data-testid="stButton"] > button.st-emotion-cache-primary {
-      background: linear-gradient(135deg, #2A3A7C, #1A2456);
-      border: 1px solid #3A4A9C;
-  }
-  div[data-testid="stButton"] > button[kind="primary"]:hover {
-      background: linear-gradient(135deg, #3A4A9C, #2A3A7C);
-      border-color: #5A6ACC;
-      box-shadow: 0 0 16px #3A4A9C33;
+      background: linear-gradient(135deg, #1E4D9A, #2563C4) !important;
+      border-color: #4A80E8 !important;
+      box-shadow: 0 0 16px #2563C433 !important;
   }
 
   /* ── Top header bar ── */
