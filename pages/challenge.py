@@ -167,6 +167,15 @@ st.markdown("""
       margin-bottom: 6px;
   }
 
+  /* ── Top header bar ── */
+  header[data-testid="stHeader"] {
+      background-color: #0D0F14 !important;
+      border-bottom: 1px solid #1F2333;
+  }
+  [data-testid="stToolbar"]        { background-color: #0D0F14 !important; }
+  [data-testid="stToolbarActions"] { display: none !important; }
+  #MainMenu { visibility: hidden !important; }
+
   /* ── Sidebar nav link visibility ── */
   [data-testid="stSidebarNavLink"] span,
   [data-testid="stSidebarNavLink"] p,
