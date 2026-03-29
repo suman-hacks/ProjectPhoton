@@ -122,6 +122,17 @@ st.markdown(
       }
       .scenario-meta strong { color: #E8EAF0; }
 
+      /* ── Sidebar nav link visibility ── */
+      [data-testid="stSidebarNavLink"] span,
+      [data-testid="stSidebarNavLink"] p,
+      [data-testid="stSidebarNavLink"] { color: #C9D0E8 !important; }
+      [data-testid="stSidebarNavLink"]:hover span,
+      [data-testid="stSidebarNavLink"]:hover p { color: #FFFFFF !important; }
+      [data-testid="stSidebarNavLink"][aria-selected="true"] span,
+      [data-testid="stSidebarNavLink"][aria-selected="true"] p { color: #C9A84C !important; }
+      section[data-testid="stSidebar"] a,
+      section[data-testid="stSidebar"] span { color: #C9D0E8; }
+
       /* ── Divider ── */
       .photon-divider {
           border: none;

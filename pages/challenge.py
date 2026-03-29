@@ -166,6 +166,25 @@ st.markdown("""
       text-transform: uppercase;
       margin-bottom: 6px;
   }
+
+  /* ── Sidebar nav link visibility ── */
+  [data-testid="stSidebarNavLink"] span,
+  [data-testid="stSidebarNavLink"] p,
+  [data-testid="stSidebarNavLink"] {
+      color: #C9D0E8 !important;
+  }
+  [data-testid="stSidebarNavLink"]:hover span,
+  [data-testid="stSidebarNavLink"]:hover p {
+      color: #FFFFFF !important;
+  }
+  [data-testid="stSidebarNavLink"][aria-selected="true"] span,
+  [data-testid="stSidebarNavLink"][aria-selected="true"] p {
+      color: #C9A84C !important;
+  }
+  section[data-testid="stSidebar"] a,
+  section[data-testid="stSidebar"] span {
+      color: #C9D0E8;
+  }
 </style>
 """, unsafe_allow_html=True)
 
@@ -233,41 +252,34 @@ def _render_route_card(route: dict, is_selected: bool = False, extra_class: str 
 
     photon_pill = ""
     if "photon_score" in route:
-        photon_pill = f"""
-        <div class="stat-pill quantum">
-            <div class="label">⚛ Photon</div>
-            <div class="value">{route['photon_score']}</div>
-        </div>"""
+        photon_pill = (
+            '<div class="stat-pill quantum">'
+            '<div class="label">⚛ Photon</div>'
+            f'<div class="value">{route["photon_score"]}</div>'
+            '</div>'
+        )
 
-    return f"""
-    <div class="{css_class}">
-        <div>
-            <span class="route-badge" style="background:{badge_color}22; color:{badge_color}; border:1px solid {badge_color}44;">
-                {route['badge']}
-            </span>
-        </div>
-        <div style="font-size:1.0rem; font-weight:700; color:#E8EAF0;">{route['name']}</div>
-        <div style="font-size:0.78rem; color:#7A8099; margin-top:4px;">{route['description']}</div>
-        <div class="stat-row">
-            <div class="stat-pill">
-                <div class="label">Approval</div>
-                <div class="value">{s['approval_rate']}%</div>
-            </div>
-            <div class="stat-pill">
-                <div class="label">Cost</div>
-                <div class="value">{s['cost_bps']} bps</div>
-            </div>
-            <div class="stat-pill">
-                <div class="label">Latency</div>
-                <div class="value">{s['latency_ms']}ms</div>
-            </div>
-            <div class="stat-pill">
-                <div class="label">Resilience</div>
-                <div class="value">{s['resilience_score']}</div>
-            </div>
-            {photon_pill}
-        </div>
-    </div>"""
+    pill = lambda label, val: (
+        f'<div class="stat-pill">'
+        f'<div class="label">{label}</div>'
+        f'<div class="value">{val}</div>'
+        f'</div>'
+    )
+
+    return (
+        f'<div class="{css_class}">'
+        f'<div><span class="route-badge" style="background:{badge_color}22;color:{badge_color};border:1px solid {badge_color}44;">'
+        f'{route["badge"]}</span></div>'
+        f'<div style="font-size:1.0rem;font-weight:700;color:#E8EAF0;">{route["name"]}</div>'
+        f'<div style="font-size:0.78rem;color:#7A8099;margin-top:4px;">{route["description"]}</div>'
+        f'<div class="stat-row">'
+        + pill("Approval", f'{s["approval_rate"]}%')
+        + pill("Cost", f'{s["cost_bps"]} bps')
+        + pill("Latency", f'{s["latency_ms"]}ms')
+        + pill("Resilience", str(s["resilience_score"]))
+        + photon_pill
+        + '</div></div>'
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -537,20 +549,22 @@ elif phase == "reveal":
         is_photon = sr["id"] == photon_id
         is_human  = sr["id"] == human_id
         extra = "photon-winner" if is_photon else ("human-match" if is_human and matched else "")
-        tag = ""
-        if is_photon:
-            tag = '<div style="font-size:0.65rem;color:#C9A84C;font-weight:700;margin-bottom:6px;letter-spacing:1px;">⚛ PHOTON CHOICE</div>'
-        if is_human and not is_photon:
-            tag = '<div style="font-size:0.65rem;color:#4A90D9;font-weight:700;margin-bottom:6px;letter-spacing:1px;">YOUR PICK</div>'
         if is_human and is_photon:
             tag = '<div style="font-size:0.65rem;color:#6FCF97;font-weight:700;margin-bottom:6px;letter-spacing:1px;">✓ MATCH</div>'
+        elif is_photon:
+            tag = '<div style="font-size:0.65rem;color:#C9A84C;font-weight:700;margin-bottom:6px;letter-spacing:1px;">⚛ PHOTON CHOICE</div>'
+        elif is_human:
+            tag = '<div style="font-size:0.65rem;color:#4A90D9;font-weight:700;margin-bottom:6px;letter-spacing:1px;">YOUR PICK</div>'
+        else:
+            tag = ""
         with rcols[ri]:
+            # Two separate st.markdown calls to avoid 4-space code-block interpretation
             st.markdown(
                 f'<div style="text-align:center;font-size:1.4rem;margin-bottom:4px;">{rank_medals[ri+1]}</div>'
-                + tag
-                + _render_route_card(sr, extra_class=extra),
+                + tag,
                 unsafe_allow_html=True,
             )
+            st.markdown(_render_route_card(sr, extra_class=extra), unsafe_allow_html=True)
 
     # ── Navigation ────────────────────────────────────────────────────────
     st.markdown("<br>", unsafe_allow_html=True)
