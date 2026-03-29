@@ -17,8 +17,9 @@ st.set_page_config(
 # ---------------------------------------------------------------------------
 pg = st.navigation(
     [
-        st.Page("pages/overview.py",  title="Overview", icon="📋", default=True),
-        st.Page("pages/dashboard.py", title="App",      icon="⚛"),
+        st.Page("pages/overview.py",   title="Overview",   icon="📋", default=True),
+        st.Page("pages/dashboard.py",  title="App",        icon="⚛"),
+        st.Page("pages/challenge.py",  title="Challenge",  icon="🎯"),
     ],
     position="sidebar",
 )
